@@ -68,7 +68,11 @@ def adicionar_ao_dicionario(termo, dicionario, ano):
 # Options são as opções disponíveis
 def obter_elementos_de_select(select_id):
   select = driver.find_element_by_id(select_id)
-  return select.find_elements_by_tag_name("option")
+  list_of_elements = []
+  for e in select.find_elements_by_tag_name("option"):
+    if e.text != '':
+      list_of_elements.append(e.text)
+  return list_of_elements
 
 def configuracao_padrao():
   seta_pagina(0)
@@ -90,7 +94,7 @@ def variaveis_do_orgao():
   filtro_orgao = driver.find_element_by_id('filtroPorOrgao')
   # coleta todas opções de um elemento
   global todos_orgaos
-  todos_orgaos = obter_elementos_de_select
+  todos_orgaos = filtro_orgao.find_elements_by_tag_name("option")
   
   filtro_orgao.find_elements_by_tag_name("option")
   global total_de_orgaos
@@ -213,7 +217,7 @@ def coleta_por_ano(ano=2010):
   exercicio = Select(driver.find_element_by_id('cboExercicio'))
   exercicio.select_by_index(index_do_ano)
   variaveis_do_orgao()
-  atualizar_dicionarios(ano)
+  # atualizar_dicionarios(ano)
   time.sleep(0.5)
   for i in range(total_de_orgaos):
     if i != 0:
@@ -222,27 +226,36 @@ def coleta_por_ano(ano=2010):
       click_em_submit()
       gerar_arquivo_do_orgao(index_do_ano, orgao_atual)
     seta_pagina(index_do_ano)
-    print("---HASHS---")
-    print(unidades_orcamentarias)
-    print("=======")
-    print(funcoes)
-    print("=======")
-    print(subfuncoes)
-    print("=======")
-    print(programas)
-    print("=======")
-    print(acoes)
-    print("=======")
-    print(elementos_de_despesa)
-    print("=======")
-    print(fontes)
-    print("=======")
-    print("=======")
-    print("---FIM HASHS---")
   print("===============")
   print("COLETA COMPLETA")
   print("===============")
 
+def mudar_select_e_esperar(id, valor):
+  select = Select(driver.find_element_by_id(id)) 
+  select.select_by_value(valor)
+
+  time.sleep(0.5)
+
+def informar_andamento(elemento, lista, classificacao):
+  print(f'{classificacao} - {elemento} - {lista.index(elemento) + 1}/{len(lista)}')
+
+def preencher_dicionarios(anos):
+  print('===Preenchendo Dicionários===')
+  for ano in anos:
+    informar_andamento(ano, anos, 'Ano')
+    # modificar ano para o desejado
+    mudar_select_e_esperar('cboExercicio', str(ano))
+    # orgaos_no_select = obter_elementos_de_select('filtroPorOrgao')
+    # print(f'{len(orgaos_no_select)} órgãos encontrados')
+    # for orgao in orgaos_no_select:
+    #   informar_andamento(orgao, orgaos_no_select, 'Órgão')
+
+
+    # coletar dados dos órgãos
+    # 
+
+driver.get(pagina) 
+preencher_dicionarios(range(2010, 2021))
 for ano in range(2010, 2021):
   coleta_por_ano(ano)
 
