@@ -24,7 +24,7 @@ def declarar_variaveis_globais():
   global fontes
 
 
-  unidades_orcamentarias = []
+  unidades_orcamentarias = {}
   funcoes = {}
   subfuncoes = {}
   programas = {}
@@ -245,14 +245,16 @@ def preencher_dicionarios(anos):
     informar_andamento(ano, anos, 'Ano')
     # modificar ano para o desejado
     mudar_select_e_esperar('cboExercicio', str(ano))
-    # orgaos_no_select = obter_elementos_de_select('filtroPorOrgao')
+    orgaos_no_select = obter_elementos_de_select('filtroPorOrgao')
+    print(orgaos_no_select)
     # print(f'{len(orgaos_no_select)} órgãos encontrados')
-    # for orgao in orgaos_no_select:
-    #   informar_andamento(orgao, orgaos_no_select, 'Órgão')
+    for orgao in orgaos_no_select:
+      adicionar_ao_dicionario(orgao, dicionario, ano)
+      informar_andamento(orgao, orgaos_no_select, 'Órgão')
 
 
     # coletar dados dos órgãos
-    # 
+    
 
 driver.get(pagina) 
 preencher_dicionarios(range(2010, 2021))
